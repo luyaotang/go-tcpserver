@@ -49,11 +49,11 @@ type connContext struct {
 // immediately return nil. Make sure the program doesn't exit and waits
 // instead for Shutdown to return.
 func (srv *TCPServer) Shutdown(ctx context.Context) (err error) {
-	err = srv.l.Close()
 	select {
 	case srv.closeCh <- struct{}{}:
 	default:
 	}
+	err = srv.l.Close()
 
 	srv.connsMu.RLock()
 	for _, c := range srv.conns {
@@ -91,11 +91,11 @@ func (srv *TCPServer) Shutdown(ctx context.Context) (err error) {
 // Close returns any error returned from closing the Server's underlying
 // Listener(s).
 func (srv *TCPServer) Close() (err error) {
-	err = srv.l.Close()
 	select {
 	case srv.closeCh <- struct{}{}:
 	default:
 	}
+	err = srv.l.Close()
 
 	srv.connsMu.RLock()
 	for _, c := range srv.conns {
